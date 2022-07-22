@@ -2,11 +2,41 @@
   <nav>
     <router-link to="/">Home</router-link> |
     <router-link to="/feed">Feed</router-link> |
-    <router-link to="/register">Register</router-link> |
+    <router-link to="/register">Registrar</router-link> |
     <router-link to="/sign-in">Login</router-link>
+    <button @click="handleLogOut" v-if="isLoggedIn">Cerrar sesión</button>
   </nav>
   <router-view />
 </template>
+
+<script lang="ts">
+import { Vue } from "vue-class-component";
+import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
+import router from "./router";
+
+export default class App extends Vue {
+
+  isLoggedIn = false;
+  auth = getAuth();
+
+  mounted() {
+    onAuthStateChanged(this.auth, (user) => {
+      if(user) {
+        this.isLoggedIn = true;
+      }else{
+        this.isLoggedIn = false;
+      }
+    });
+  }
+
+  handleLogOut = () => {
+    signOut(this.auth).then(() => {
+      router.push("/");
+    })
+  };
+}
+</script>
+
 
 <style>
 #app {
